@@ -17,7 +17,7 @@ end
 class DFARulebook < Struct.new(:rules)
 
   def nextState(state, character)
-    puts "state: #{state} char: #{character}"
+    puts "state: #{state} char: #{character} nextState: #{ruleFor(state, character).follow}"
     ruleFor(state, character).follow
   end
 
@@ -43,10 +43,14 @@ class DFA < Struct.new(:currentState, :acceptStates, :ruleBook)
 end
 
 rulebook = DFARulebook.new([
-  FARule.new(1, 'a', 2), FARule.new(1, 'b', 1),
-  FARule.new(2, 'a', 2), FARule.new(2, 'b', 3),
-  FARule.new(3, 'a', 3), FARule.new(3, 'b', 3)
+  FARule.new(1, 'a', 2), FARule.new(1, 'b', 2),
+  FARule.new(2, 'a', 3), FARule.new(2, 'b', 3),
+  FARule.new(3, 'a', 4), FARule.new(3, 'b', 5),
+  FARule.new(4, 'a', 4), FARule.new(4, 'b', 4),
+  FARule.new(5, 'a', 5), FARule.new(5, 'b', 5),
 ])
+
+# /[ab][ab]bw?/
 
 class DFAGen < Struct.new(:startState, :acceptStates, :ruleBook)
   def toDfa
@@ -59,7 +63,9 @@ class DFAGen < Struct.new(:startState, :acceptStates, :ruleBook)
 end
 
 
-resetableDFA = DFAGen.new(1, [3], rulebook)
-resetableDFA.accept?('ab')
-resetableDFA.accept?('aba')
+resetableDFA = DFAGen.new(1, [5], rulebook)
+resetableDFA.accept?('aab')
+resetableDFA.accept?('bbb')
 resetableDFA.accept?('abb')
+resetableDFA.accept?('bab')
+# /[ab][ab]bw?/
